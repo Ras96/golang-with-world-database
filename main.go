@@ -17,13 +17,6 @@ type City struct {
 	Population  int     `json:"population,omitempty" db:"Population"`
 }
 
-type Country struct {
-	Code       string `json:"code,omitempty"  db:"Code"`
-	Name       string `json:"name,omitempty"  db:"Name"`
-	Continent  string `json:"continent,omitempty"  db:"Continent"`
-	Population int    `json:"population,omitempty"  db:"Population"`
-}
-
 func main() {
 	db, err := sqlx.Connect("mysql", fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
@@ -38,12 +31,12 @@ func main() {
 
 	fmt.Println("Connected!")
 
-	city := City{}
-	_ = db.Get(&city, "SELECT * FROM city WHERE Name = '" + os.Args[1] + "' LIMIT 1")
+	cities := []City{}
+	_ = db.Select(&cities, "SELECT * FROM city WHERE CountryCode = 'JPN'")
 
-	country := Country{}
-	_ = db.Get(&country, "SELECT Code, Population FROM country WHERE Code = '" + city.CountryCode + "' LIMIT 1")
-
-	fmt.Printf("%vの人口割合は%vです\n", os.Args[1], float64(city.Population) / float64(country.Population))
+	fmt.Println("日本の都市一覧")
+	for _, city := range cities {
+		fmt.Printf("都市名: %s, 人口: %d人\n", city.Name, city.Population)
+	}
 }
 
