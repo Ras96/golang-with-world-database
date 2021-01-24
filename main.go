@@ -31,6 +31,7 @@ func main() {
 
 	fmt.Println("Connected!")
 
+	//複数レコードの取得
 	cities := []City{}
 	_ = db.Select(&cities, "SELECT * FROM city WHERE CountryCode = 'JPN'")
 
@@ -38,5 +39,18 @@ func main() {
 	for _, city := range cities {
 		fmt.Printf("都市名: %s, 人口: %d人\n", city.Name, city.Population)
 	}
+
+	//レコードの追加
+	_ , _ = db.Exec("INSERT INTO city (Name, CountryCode, District, Population) VALUES ('oookayama', 'JPN', 'Tokyo', 2147483647);")
+	city := City{}
+	_ = db.Get(&city, "SELECT * FROM city WHERE Name='oookayama'")
+	fmt.Println(city)
+
+	//レコードの削除
+	city2 := City{}
+	_, _= db.Exec("DELETE FROM city WHERE Name = 'oookayama'")
+	_ = db.Get(&city2, "SELECT * FROM city WHERE Name='oookayama'")
+	fmt.Println(city2)
+
 }
 
